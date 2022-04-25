@@ -17,13 +17,16 @@ def plot_2d(volume, mask):
 
 
 def show_3d_volume(volume_reader, index=0):
+    data = vr.read(index)
+    volume, mask = vr.normalize_inputs(data)
 
-    volume, mask = volume_reader[index]
     skeleton = volume_reader.skeletonize_mask(mask)
+
     viewer = napari.Viewer(ndisplay=3)
 
     viewer.add_image(volume, rgb=False)
     viewer.add_image(mask, rgb=False, blending='additive', colormap='cyan')
+    viewer.add_image(skeleton, rgb=False, blending='additive', colormap='green')
 
     points = volume_reader.get_end_point_from_skeleton(skeleton)
     viewer.add_points(points, size=5)

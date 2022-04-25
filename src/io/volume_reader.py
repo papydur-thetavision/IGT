@@ -19,6 +19,19 @@ class VolumeReader(Dataset):
         self.data_path = 'C:/Users/320181892/Documents/python/Hongxu_IGT/Hongxu_materials/Dataset/'
         self.normalization_constants = {'mean': 0.134014, 'std': 0.176344}
         self.data_transform = data_transform
+        self.endpoints = []
+
+    def precompute_endpoints(self):
+        for index in range(len(self.volume_list)):
+            data = self.read(index)
+            volume, mask = self.normalize_inputs(data)
+            volume_shape = torch.Tensor(volume.shape)
+            points = self.get_end_points(mask)
+
+            # always set point closest to origin as coord 1
+            min_index = points.sum(axis=1).argmin()
+            self.endpoints.append({'coord1': torch.Tensor(points[min_index]).float() / volume_shape,
+                 'coord2': torch.Tensor(points[1 - min_index]).float() / volume_shape})
 
     def create_volume_list(self):
         self.volume_list = [volume for volume in os.listdir(self.data_path) if volume.endswith('.mat')]
@@ -38,9 +51,7 @@ class VolumeReader(Dataset):
     def __getitem__(self, index):
         data = self.read(index)
         volume, mask = self.normalize_inputs(data)
-
         volume_shape = torch.Tensor(volume.shape)
-
         points = self.get_end_points(mask)
 
         #always set point closest to origin as coord 1
