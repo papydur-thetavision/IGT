@@ -4,7 +4,7 @@ import numpy as np
 
 from src.io.volume_reader import VolumeReader
 from src.networks.fcn_simple_net_pytorch import FcnSimpleNetPytorch
-from src.networks.network_tf import NetWork as FcnSimpleNetTensorflow
+#from src.networks.network_tf import NetWork as FcnSimpleNetTensorflow
 from src.lightning_parts import CatheterDataModule, Catheter3DSystem
 
 
@@ -34,11 +34,12 @@ def pytorch_model_and_input_160() -> (FcnSimpleNetPytorch, torch.Tensor):
     return FcnSimpleNetPytorch(image_size=160), torch.rand(1, 1, 160, 160, 160)
 
 
-@pytest.fixture
-def tensorflow_model_and_input_160() -> (FcnSimpleNetTensorflow, np.array):
-    net = FcnSimpleNetTensorflow()
-    test_input = np.random.rand(160, 160, 160)
-    return net, test_input
+
+# @pytest.fixture
+# def tensorflow_model_and_input_160() -> (FcnSimpleNetTensorflow, np.array):
+#     net = FcnSimpleNetTensorflow()
+#     test_input = np.random.rand(160, 160, 160)
+#     return net, test_input
 
 
 @pytest.fixture

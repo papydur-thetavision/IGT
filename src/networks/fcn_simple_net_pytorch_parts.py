@@ -176,7 +176,6 @@ class CoordinateHead(nn.Module):
             nn.Linear(in_channels//2, in_channels//4),
             nn.LeakyReLU(),
             nn.Linear(in_channels // 4, 3),
-            nn.Sigmoid()
         )
 
         self.coord2 = nn.Sequential(
@@ -185,7 +184,6 @@ class CoordinateHead(nn.Module):
             nn.Linear(in_channels//2, in_channels//4),
             nn.LeakyReLU(),
             nn.Linear(in_channels // 4, 3),
-            nn.Sigmoid()
         )
 
     def forward(self, x):

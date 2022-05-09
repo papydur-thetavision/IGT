@@ -9,14 +9,17 @@ import torch.nn
 from skimage.morphology import skeletonize
 from scipy.ndimage import convolve
 from torch.utils.data import Dataset
-from torchvision import transforms
+
+from src.config import Config
 
 
 class VolumeReader(Dataset):
 
-    def __init__(self, data_transform=None):
+    def __init__(self,  data_transform=None):
+
+        self.config = Config()
+        self.data_path = self.config.data_path
         self.volume_list = None
-        self.data_path = 'C:/Users/320181892/Documents/python/Hongxu_IGT/Hongxu_materials/Dataset/'
         self.normalization_constants = {'mean': 0.134014, 'std': 0.176344}
         self.data_transform = data_transform
         self.endpoints = []
@@ -51,13 +54,17 @@ class VolumeReader(Dataset):
     def __getitem__(self, index):
         data = self.read(index)
         volume, mask = self.normalize_inputs(data)
-        volume_shape = torch.Tensor(volume.shape)
-        points = self.get_end_points(mask)
 
-        #always set point closest to origin as coord 1
-        min_index = points.sum(axis=1).argmin()
-        y = {'coord1': torch.Tensor(points[min_index]).float() / volume_shape,
-             'coord2': torch.Tensor(points[1-min_index]).float() / volume_shape}
+        if self.endpoints:
+            y = self.endpoints[index]
+        else:
+            volume_shape = torch.Tensor(volume.shape)
+            points = self.get_end_points(mask)
+
+            #always set point closest to origin as coord 1
+            min_index = points.sum(axis=1).argmin()
+            y = {'coord1': torch.Tensor(points[min_index]).float() / volume_shape,
+                 'coord2': torch.Tensor(points[1-min_index]).float() / volume_shape}
 
         volume = torch.Tensor(volume)
         volume = volume.unsqueeze(0).float()
@@ -103,6 +110,11 @@ class VolumeReader(Dataset):
 
         vr_val = VolumeReader(data_transform=self.data_transform)
         vr_val.volume_list = self.volume_list[n_train:]
+
+        if self.endpoints:
+            vr_train.endpoints = self.endpoints[:n_train]
+            vr_val.endpoints = self.endpoints[n_train:]
+
         return vr_train, vr_val
 
 

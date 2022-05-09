@@ -12,7 +12,7 @@ class Instrument3DModel(nn.Module):
         self.encoder_block_2 = EncoderBlock(in_channels=self.base_channels, out_channels=self.base_channels * 2)
         self.encoder_block_3 = EncoderBlock(in_channels=self.base_channels * 2, out_channels=self.base_channels * 4)
         self.encoder_block_4 = EncoderBlock(in_channels=self.base_channels * 4, out_channels=self.base_channels * 8)
-        self.encoder_block_5 = Conv3DINReLU(in_channels=self.base_channels * 8, out_channels=self.base_channels * 8)
+        self.encoder_block_5 = Conv3DINReLU(channels=self.base_channels * 8)
         self.coord_head = CoordinateHead(in_channels=self.base_channels*8)
 
         for m in self.modules():

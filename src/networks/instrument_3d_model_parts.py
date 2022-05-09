@@ -5,8 +5,9 @@ class EncoderBlock(nn.Module):
     def __init__(self, in_channels, out_channels, first_kernel_size=3):
         super().__init__()
         self.encoder_block = nn.Sequential(
-            Conv3DINReLU(in_channels, out_channels, kernel_size=first_kernel_size),
-            Conv3DINReLU(out_channels, out_channels, kernel_size=3),
+            nn.Conv3d(in_channels, out_channels, kernel_size=(1, 1, 1), padding='same'),
+            Conv3DINReLU(out_channels, kernel_size=first_kernel_size),
+            Conv3DINReLU(out_channels, kernel_size=3),
         )
         self.pool = nn.MaxPool3d(2)
 
@@ -18,16 +19,17 @@ class EncoderBlock(nn.Module):
 
 class Conv3DINReLU(nn.Module):
 
-    def __init__(self, in_channels, out_channels, kernel_size=3):
+    def __init__(self, channels, kernel_size=3):
         super().__init__()
         self.conv3d_in_relu = nn.Sequential(
-            nn.Conv3d(in_channels, out_channels, kernel_size, padding='same'),
-            nn.InstanceNorm3d(out_channels),
+            nn.Conv3d(channels, channels, kernel_size, padding='same'),
+            nn.InstanceNorm3d(channels),
             nn.ReLU(),
         )
 
     def forward(self, x):
-        return self.conv3d_in_relu(x)
+        x_out = self.conv3d_in_relu(x)
+        return x + x_out
 
 
 class CoordinateHead(nn.Module):

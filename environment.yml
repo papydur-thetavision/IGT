@@ -1,4 +1,4 @@
-name: Hongxu_IGT
+name: IGT
 channels:
   - pytorch
   - conda-forge
@@ -221,4 +221,3 @@ dependencies:
     - vispy==0.9.6
     - wcwidth==0.2.5
     - wrapt==1.14.0
-prefix: C:\Users\320181892\Miniconda3\envs\Hongxu_IGT
